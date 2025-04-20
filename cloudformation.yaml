@@ -1,0 +1,123 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation stack for Gas Tracker Lambda API
+
+Parameters:
+  AlchemyEthereumRpc:
+    Type: String
+  AlchemyPolygonRpc:
+    Type: String
+  AlchemyArbitrumRpc:
+    Type: String
+
+Resources:
+
+  GasTrackerLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: gas-tracker-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: gas-tracker-logs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  GasTrackerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: gas-tracker-function
+      Handler: handlers/gasTracker.handler
+      Role: !GetAtt GasTrackerLambdaRole.Arn
+      Runtime: nodejs20.x
+      MemorySize: 128
+      Timeout: 10
+      Code:
+        S3Bucket: tonynagy.io
+        S3Key: gas-tracker-lambda.zip
+      Environment:
+        Variables:
+          ALCHEMY_ETHEREUM_RPC: !Ref AlchemyEthereumRpc
+          ALCHEMY_POLYGON_RPC: !Ref AlchemyPolygonRpc
+          ALCHEMY_ARBITRUM_RPC: !Ref AlchemyArbitrumRpc
+
+  GasTrackerApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: GasTrackerApi
+
+  GasTrackerResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - GasTrackerApi
+          - RootResourceId
+      PathPart: gas
+      RestApiId: !Ref GasTrackerApi
+
+  GasTrackerMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      ResourceId: !Ref GasTrackerResource
+      RestApiId: !Ref GasTrackerApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Sub:
+            - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations
+            - { LambdaArn: !GetAtt GasTrackerFunction.Arn }
+
+  GasTrackerPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref GasTrackerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: 
+        Fn::Sub: arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GasTrackerApi}/*/GET/gas
+
+  GasTrackerDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - GasTrackerMethod
+    Properties:
+      RestApiId: !Ref GasTrackerApi
+      StageName: prod
+
+  GasTrackerUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - GasTrackerDeployment
+    Properties:
+      UsagePlanName: GasTrackerUsagePlan
+      ApiStages:
+        - ApiId: !Ref GasTrackerApi
+          Stage: prod
+
+  GasTrackerApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: GasTrackerApiKey
+      Enabled: true
+
+  GasTrackerUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref GasTrackerApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref GasTrackerUsagePlan

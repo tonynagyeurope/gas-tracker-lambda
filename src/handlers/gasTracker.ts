@@ -1,0 +1,62 @@
+// src/handlers/gasTracker.ts
+
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { networks, Network } from '../config/networks';
+import { getGasDataForNetworks } from '../utils/gasTracker';
+
+export const handler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  try {
+    // Parse query parameters
+    const amountUsdParam = event.queryStringParameters?.amountUsd;
+    const selectedNetworksParam = event.queryStringParameters?.networks;
+
+    if (!amountUsdParam || !selectedNetworksParam) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: 'Missing required query parameters: amountUsd and networks',
+        }),
+      };
+    }
+
+    const amountUsd = parseFloat(amountUsdParam);
+    const requestedIds = selectedNetworksParam.split(',');
+
+    // Filter valid networks
+    const requestedKeys = selectedNetworksParam.split(',');
+
+    const selectedNetworks: Network[] = requestedKeys
+      .map((key) => networks.find((net) => net.key === key))
+      .filter((net): net is Network => net !== undefined);    
+
+    if (selectedNetworks.length === 0) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: 'No valid networks provided.',
+        }),
+      };
+    }
+
+    const gasData = await getGasDataForNetworks(
+      selectedNetworks.map((n) => n.key),
+      amountUsd
+    );
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ gasData }),
+    };
+  } catch (err: any) {
+    console.error('Error in gasTracker handler:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal server error' }),
+    };
+  }
+};

@@ -49,6 +49,9 @@ export const handler = async (
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://gas.tonynagy.io', 
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'OPTIONS,GET',        
       },
       body: JSON.stringify({ gasData }),
     };

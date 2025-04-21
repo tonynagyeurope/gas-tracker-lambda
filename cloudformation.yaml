@@ -38,7 +38,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: gas-tracker-function
-      Handler: handlers/gasTracker.handler
+      Handler: dist/handlers/gasTracker.handler
       Role: !GetAtt GasTrackerLambdaRole.Arn
       Runtime: nodejs20.x
       MemorySize: 128

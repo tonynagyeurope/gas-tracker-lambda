@@ -45,7 +45,7 @@ Resources:
       Timeout: 10
       Code:
         S3Bucket: tonynagy.io
-        S3Key: S3Key: gas-tracker-lambda-v2.zip
+        S3Key: gas-tracker-lambda-v2.zip
       Environment:
         Variables:
           ALCHEMY_ETHEREUM_RPC: !Ref AlchemyEthereumRpc

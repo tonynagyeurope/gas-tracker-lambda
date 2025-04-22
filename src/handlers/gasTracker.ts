@@ -41,8 +41,7 @@ export const handler = async (
     }
 
     const gasData = await getGasDataForNetworks(
-      selectedNetworks.map((n) => n.key),
-      amountUsd
+      selectedNetworks.map((n) => n.key)
     );
 
     return {

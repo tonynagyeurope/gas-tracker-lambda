@@ -1,53 +1,51 @@
-// src/utils/gasTracker.ts
+import { JsonRpcProvider } from 'ethers';
+import { formatUnits } from 'ethers';
+import { networks } from '../config/networks';
 
-import { JsonRpcProvider, formatUnits } from 'ethers';
-import { networks, Network } from '../config/networks';
-
-export interface GasResult {
+interface GasData {
   network: string;
   gasPriceGwei: string;
   estimatedGasFee: string;
-  nativeToken: string;
   usdEquivalent: string;
+  nativeToken: string;
+  responseTimeMs: number;
 }
 
 export async function getGasDataForNetworks(
-  selectedNetworks: string[], // ⬅️ csak kulcsok
-  usdAmount?: number
-): Promise<GasResult[]> {
-  const results: GasResult[] = [];
+  selectedNetworkKeys: string[]
+): Promise<GasData[]> {
+  const results: GasData[] = [];
 
-  for (const network of networks as Network[]) {
-    if (!selectedNetworks.includes(network.key)) continue;
+  for (const key of selectedNetworkKeys) {
+    const net = networks.find((n) => n.key === key);
+    if (!net) continue;
 
-    const provider = new JsonRpcProvider(network.rpcUrl);
+    const provider = new JsonRpcProvider(net.rpcUrl);
+    const start = Date.now();
 
+    let gasPrice;
     try {
-      // 1. Fetch the current gas price (BigInt in wei)
-      const feeData = await provider.getFeeData();
-      const gasPrice = feeData.gasPrice ?? BigInt(0); // fallback to 0 if null
-
-      // 2. Assume standard transfer uses 21,000 gas units
-      const estimatedGasUnits = BigInt(21000);
-      const estimatedGasFee = gasPrice * estimatedGasUnits;
-
-      // 3. Convert gas price and estimated fee to readable values (Gwei & native)
-      const gasPriceGwei = formatUnits(gasPrice, 'gwei');
-      const estimatedFeeInNative = formatUnits(estimatedGasFee, network.nativeDecimals);
-
-      // 4. Calculate the USD equivalent of estimated gas
-      const usdEquivalent = ((Number(estimatedFeeInNative) * network.usdPricePerToken)).toFixed(6);
-
-      results.push({
-        network: network.name,
-        gasPriceGwei,
-        estimatedGasFee: estimatedFeeInNative,
-        nativeToken: network.nativeToken,
-        usdEquivalent,
-      });
-    } catch (error) {
-      console.error(`Failed to fetch gas data for ${network.name}:`, error);
+      gasPrice = await provider.send('eth_gasPrice', []);
+    } catch (err) {
+      console.error(`Failed to fetch gas price for ${key}`, err);
+      continue;
     }
+
+    const end = Date.now();
+
+    const gasPriceGwei = parseFloat(formatUnits(gasPrice, 'gwei'));
+    const estimatedGasFee = gasPriceGwei * 21000;
+    const estimatedGasFeeEth = estimatedGasFee / 1e9;
+    const usdEquivalent = (estimatedGasFeeEth * net.usdPricePerToken).toFixed(4);    
+
+    results.push({
+      network: net.name,
+      gasPriceGwei: gasPriceGwei.toFixed(2),
+      estimatedGasFee: estimatedGasFee.toFixed(4),
+      usdEquivalent,
+      nativeToken: net.nativeToken,
+      responseTimeMs: end - start,
+    });
   }
 
   return results;

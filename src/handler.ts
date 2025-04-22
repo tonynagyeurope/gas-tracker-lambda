@@ -1,34 +1,63 @@
-import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
-import { networks, Network } from './config/networks';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { networks } from './config/networks';
 import { getGasDataForNetworks } from './utils/gasTracker';
 
-export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  const queryParams = event.queryStringParameters || {};
-  const requestedNetworks = (queryParams.networks?.split(',') || []) as string[];
-  const usdAmount = queryParams.usdAmount ? parseFloat(queryParams.usdAmount) : undefined;
+export const handler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  try {
+    const selectedNetworksParam = event.queryStringParameters?.networks;
 
-  // Add explicit type
-  const selected: Network[] = networks.filter((net) =>
-    requestedNetworks.includes(net.key)
-  );
+    if (!selectedNetworksParam) {
+      return {
+        statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          error: 'Missing required query parameter: networks',
+        }),
+      };
+    }
 
-  if (selected.length === 0) {
+    const selectedNetworkKeys = selectedNetworksParam.split(',');
+    const selected = selectedNetworkKeys
+      .map((key) => networks.find((n) => n.key === key))
+      .filter((n): n is NonNullable<typeof n> => !!n);
+
+    if (selected.length === 0) {
+      return {
+        statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          error: 'No valid networks provided.',
+        }),
+      };
+    }
+
+    const gasData = await getGasDataForNetworks(selected.map((n) => n.key));
+
     return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'No valid networks provided.' }),
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ gasData }),
+    };
+  } catch (err: any) {
+    console.error('Error in gasTracker handler:', err);
+    return {
+      statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ error: 'Internal server error' }),
     };
   }
-
-  const result = await getGasDataForNetworks(
-    selected.map((n) => n.key),
-    usdAmount
-  );
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(result),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
 };

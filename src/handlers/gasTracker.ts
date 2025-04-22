@@ -9,19 +9,18 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   try {
     // Parse query parameters
-    const amountUsdParam = event.queryStringParameters?.amountUsd;
+
     const selectedNetworksParam = event.queryStringParameters?.networks;
 
-    if (!amountUsdParam || !selectedNetworksParam) {
+    if (!selectedNetworksParam) {
       return {
         statusCode: 400,
         body: JSON.stringify({
-          error: 'Missing required query parameters: amountUsd and networks',
+          error: 'Missing required query parameters: networks',
         }),
       };
     }
-
-    const amountUsd = parseFloat(amountUsdParam);
+        
     const requestedIds = selectedNetworksParam.split(',');
 
     // Filter valid networks

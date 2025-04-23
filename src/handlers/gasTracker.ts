@@ -1,4 +1,8 @@
-// src/handlers/gasTracker.ts
+/**
+* @title Real-time Gas Fee Tracker
+* @author Tony Nagy - Solidity & AWS Developer
+* @dev Handler function
+*/
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { networks, Network } from '../config/networks';
@@ -9,7 +13,6 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   try {
     // Parse query parameters
-
     const selectedNetworksParam = event.queryStringParameters?.networks;
 
     if (!selectedNetworksParam) {
@@ -21,8 +24,6 @@ export const handler = async (
       };
     }
         
-    const requestedIds = selectedNetworksParam.split(',');
-
     // Filter valid networks
     const requestedKeys = selectedNetworksParam.split(',');
 

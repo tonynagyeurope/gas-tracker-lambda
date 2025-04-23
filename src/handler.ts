@@ -1,3 +1,9 @@
+/**
+* @title Real-time Gas Fee Tracker
+* @author Tony Nagy - Solidity & AWS Developer
+* @dev Handler function
+*/
+
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { networks } from './config/networks';
 import { getGasDataForNetworks } from './utils/gasTracker';

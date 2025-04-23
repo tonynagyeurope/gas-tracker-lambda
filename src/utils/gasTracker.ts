@@ -1,3 +1,9 @@
+/**
+* @title Real-time Gas Fee Tracker
+* @author Tony Nagy - Solidity / AWS Developer
+* @dev Utility functions to retrieve gas data from providers
+*/
+
 import { JsonRpcProvider } from 'ethers';
 import { formatUnits } from 'ethers';
 import { networks } from '../config/networks';

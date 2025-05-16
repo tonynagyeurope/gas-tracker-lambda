@@ -32,6 +32,14 @@ export const networks: Network[] = [
     nativeDecimals: 18,
     usdPricePerToken: 3000,
   },
+  {
+    key: 'base',
+    name: 'Base',
+    rpcUrl: process.env.ALCHEMY_BASE_RPC!, 
+    nativeToken: 'ETH',
+    nativeDecimals: 18,
+    usdPricePerToken: 1,
+  }
 ];
 
 for (const net of networks) {

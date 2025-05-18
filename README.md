@@ -65,6 +65,7 @@ aws cloudformation deploy \
       AlchemyEthereumRpc=$ALCHEMY_ETHEREUM_RPC \
       AlchemyPolygonRpc=$ALCHEMY_POLYGON_RPC \
       AlchemyArbitrumRpc=$ALCHEMY_ARBITRUM_RPC \
+      AlchemyBaseRpc=$ALCHEMY_BASE_RPC \
   --capabilities CAPABILITY_NAMED_IAM
 ```
 After deployment, note the API Gateway **Invoke URL** and **API Key** from the stack outputs.

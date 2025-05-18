@@ -14,7 +14,7 @@ export const networks: Network[] = [
     rpcUrl: process.env.ALCHEMY_ETHEREUM_RPC!,
     nativeToken: 'ETH',
     nativeDecimals: 18,
-    usdPricePerToken: 3000,
+    usdPricePerToken: 2507.55,
   },
   {
     key: 'polygon',
@@ -22,7 +22,7 @@ export const networks: Network[] = [
     rpcUrl: process.env.ALCHEMY_POLYGON_RPC!,
     nativeToken: 'MATIC',
     nativeDecimals: 18,
-    usdPricePerToken: 0.95,
+    usdPricePerToken: 0.24,
   },
   {
     key: 'arbitrum',
@@ -30,7 +30,7 @@ export const networks: Network[] = [
     rpcUrl: process.env.ALCHEMY_ARBITRUM_RPC!,
     nativeToken: 'ETH',
     nativeDecimals: 18,
-    usdPricePerToken: 3000,
+    usdPricePerToken: 0.3918,
   },
   {
     key: 'base',
@@ -38,7 +38,7 @@ export const networks: Network[] = [
     rpcUrl: process.env.ALCHEMY_BASE_RPC!, 
     nativeToken: 'ETH',
     nativeDecimals: 18,
-    usdPricePerToken: 1,
+    usdPricePerToken: 2510,
   }
 ];
 

@@ -8,6 +8,8 @@ Parameters:
     Type: String
   AlchemyArbitrumRpc:
     Type: String
+  AlchemyBaseRpc:
+    Type: String    
 
 Resources:
 
@@ -51,6 +53,7 @@ Resources:
           ALCHEMY_ETHEREUM_RPC: !Ref AlchemyEthereumRpc
           ALCHEMY_POLYGON_RPC: !Ref AlchemyPolygonRpc
           ALCHEMY_ARBITRUM_RPC: !Ref AlchemyArbitrumRpc
+          ALCHEMY_BASE_RPC: !Ref AlchemyBaseRpc
 
   GasTrackerApi:
     Type: AWS::ApiGateway::RestApi

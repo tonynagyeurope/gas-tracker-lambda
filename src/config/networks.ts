@@ -30,7 +30,7 @@ export const networks: Network[] = [
     rpcUrl: process.env.ALCHEMY_ARBITRUM_RPC!,
     nativeToken: 'ETH',
     nativeDecimals: 18,
-    usdPricePerToken: 0.3918,
+    usdPricePerToken: 2507.55,
   },
   {
     key: 'base',

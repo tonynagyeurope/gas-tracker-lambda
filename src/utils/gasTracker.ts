@@ -47,7 +47,7 @@ export async function getGasDataForNetworks(
     results.push({
       network: net.name,
       gasPriceGwei: gasPriceGwei.toFixed(2),
-      estimatedGasFee: estimatedGasFee.toFixed(4),
+      estimatedGasFee: estimatedGasFeeEth.toFixed(6),
       usdEquivalent,
       nativeToken: net.nativeToken,
       responseTimeMs: end - start,

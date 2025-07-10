@@ -8,10 +8,10 @@ Tony Nagy - Solidity & AWS Developer
 https://tonynagy.io
 
 ## Description
-Gas Tracker Lambda is an AWS Lambda function written in TypeScript that fetches real-time gas fee data across multiple blockchain networks (e.g., Ethereum, Polygon, Arbitrum). It is exposed via Amazon API Gateway with an API key for authorized access.
+Gas Tracker Lambda is an AWS Lambda function written in TypeScript that fetches real-time gas fee data across multiple blockchain networks (e.g., Ethereum, Polygon, Arbitrum, Base). It is exposed via Amazon API Gateway with an API key for authorized access.
 
 ## Key Features
-- **Multi-chain support**: Fetch current gas prices from Ethereum, Polygon, and Arbitrum networks
+- **Multi-chain support**: Fetch current gas prices from Ethereum, Polygon, Arbitrum and Base networks
 - **Cost estimation**: Calculate estimated transaction fees in native token units and USD
 - **Configurable RPC providers**: Use Alchemy RPC endpoints via environment variables
 - **Low-latency**, lightweight Lambda function (128 MB, 10 s timeout)
@@ -118,6 +118,5 @@ The `cloudformation.yaml` template defines:
 Contributions are welcome. Please open issues or pull requests against this repository.
 
 ## License
-ISC License. See [package.json](./package.json) for details.
-
+MIT License.
 

@@ -1,7 +1,7 @@
 # Gas Tracker Lambda
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![License](https://img.shields.io/badge/license-ISC-blue)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
 ## Author
 Tony Nagy - Solidity & AWS Developer

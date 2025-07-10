@@ -36,6 +36,7 @@ Create a `.env` file in the project root (ignored by Git) with the following key
 ALCHEMY_ETHEREUM_RPC=https://eth-mainnet.alchemyapi.io/v2/YOUR_KEY
 ALCHEMY_POLYGON_RPC=https://polygon-mainnet.g.alchemy.com/v2/YOUR_KEY
 ALCHEMY_ARBITRUM_RPC=https://arb-mainnet.g.alchemy.com/v2/YOUR_KEY
+ALCHEMY_BASE_RPC=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
 ```
 
 ## Installation & Build
